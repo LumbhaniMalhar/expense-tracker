@@ -13,6 +13,19 @@ const theme = createTheme({
       main: '#19346b',
     },
   },
+  components: {
+    MuiTypography: {
+      variants: [
+        {
+          props: { variant: 'h6' },
+          style: {
+            fontWeight: 'bold',
+            // color: '#19346b',
+          },
+        },
+      ],
+    },
+  },
 });
 
 const container = document.getElementById('root');

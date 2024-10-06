@@ -161,7 +161,10 @@ const ExpenseForm = () => {
               onChange={(e) => handleChange(e.target.value, 'date')}
               error={!!errors.date}
               helperText={errors.date}
-              slotProps={{ inputLabel: { shrink: true } }}
+              slotProps={{
+                inputLabel: { shrink: true },
+                htmlInput: { max: new Date().toISOString().split('T')[0] },
+              }}
             />
           </Grid>
 

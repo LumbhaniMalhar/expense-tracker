@@ -61,7 +61,8 @@ const ViewExpenses = () => {
   };
 
   const filteredExpenses = useMemo(() => {
-    return expenses.filter(expense => {
+    const sortedExpenses = expenses.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+    return sortedExpenses.filter(expense => {
       const matchesCategory = filters.category === 'All' || expense.category === filters.category;
       const matchesSearch = expense.description.toLowerCase().includes(filters.searchTerm.toLowerCase());
       const matchesType = filters.expenseType === 'All' || expense.expenseType === filters.expenseType;
@@ -137,7 +138,6 @@ const ViewExpenses = () => {
             inputLabel: { shrink: true },
             htmlInput: { max: filters.endDate },
           }}
-
         />
 
         <TextField
