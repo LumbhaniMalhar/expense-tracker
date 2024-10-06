@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
+import { useForm, Controller } from 'react-hook-form';
 import {
   Button, TextField, MenuItem, ToggleButton, ToggleButtonGroup,
   Typography, Autocomplete, Box, Divider
@@ -7,50 +8,33 @@ import {
 import Grid from '@mui/material/Grid2';
 import { useDispatch } from 'react-redux';
 import { addExpenseAsync } from '../slices/expensesSlice';
-import { expenseCategories, incomeCategories, validateForm, commonDescriptions } from '../utils/constants';
+import { expenseCategories, incomeCategories, commonDescriptions } from '../utils/constants';
 import { useSnackBar } from '../hooks/useSnackBar';
 
 const ExpenseForm = () => {
-  const [expense, setExpense] = useState({
-    expenseType: 'Expense',
-    description: '',
-    amount: '',
-    category: '',
-    date: '',
-  });
-  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const { showSnackbar } = useSnackBar();
-
-  const handleChange = (value, type) => {
-    setExpense((prev) => ({
-      ...prev,
-      [type]: value,
-    }));
-    if (errors[type]) {
-      setErrors((prev) => ({ ...prev, [type]: '' }));
+  const { control, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm({
+    defaultValues: {
+      expenseType: 'Expense',
+      description: '',
+      amount: '',
+      category: '',
+      date: '',
     }
-  };
+  });
 
-  const handleSubmit = () => {
-    if (validateForm(expense, setErrors)) {
-      const expenseData = {
-        ...expense,
-        amount: parseFloat(expense.amount),
-        date: expense.date ? expense.date : new Date().toISOString().split('T')[0],
-      };
-      dispatch(addExpenseAsync(expenseData));
-      setExpense({
-        expenseType: 'Expense',
-        description: '',
-        amount: '',
-        category: '',
-        date: '',
-      });
-      showSnackbar('Expense added successfully!', 'success');
-    } else {
-      showSnackbar('Please fill in all required fields', 'error');
-    }
+  const expenseType = watch('expenseType');
+
+  const onSubmit = (data) => {
+    const expenseData = {
+      ...data,
+      amount: parseFloat(data.amount),
+      date: data.date ? data.date : new Date().toISOString().split('T')[0],
+    };
+    dispatch(addExpenseAsync(expenseData));
+    reset();
+    showSnackbar('Expense added successfully!', 'success');
   };
 
   return (
@@ -60,126 +44,155 @@ const ExpenseForm = () => {
       transition={{ duration: 0.5 }}
     >
       <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
-        <Grid container spacing={2.5} direction="column">
-          <Grid item>
-            <Typography variant="h5" gutterBottom color='primary' sx={{ fontWeight: 'bold' }}>
-              Add New {expense.expenseType}
-            </Typography>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={2.5} direction="column">
+            <Grid item>
+              <Typography variant="h5" gutterBottom color='primary' sx={{ fontWeight: 'bold' }}>
+                Add New {expenseType}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Controller
+                name="expenseType"
+                control={control}
+                render={({ field }) => (
+                  <ToggleButtonGroup
+                    {...field}
+                    exclusive
+                    onChange={(_, value) => {
+                      if (value) {
+                        field.onChange(value);
+                        setValue('category', '');
+                      }
+                    }}
+                    aria-label="expense type"
+                    size="small"
+                  >
+                    <ToggleButton value="Expense">Expense</ToggleButton>
+                    <ToggleButton value="Income">Income</ToggleButton>
+                  </ToggleButtonGroup>
+                )}
+              />
+            </Grid>
+            <Grid item>
+              <Typography variant="subtitle2" gutterBottom required>
+                Amount <Box component="span" sx={{ color: 'error.main' }}>*</Box>
+              </Typography>
+              <Controller
+                name="amount"
+                control={control}
+                rules={{ required: 'Amount is required' }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    size="small"
+                    fullWidth
+                    type="number"
+                    error={!!errors.amount}
+                    helperText={errors.amount?.message}
+                    slotProps={{
+                      input: {
+                        startAdornment: <Box sx={{ color: 'text.secondary', mr: 1 }}>$</Box>,
+                      }
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item>
+              <Divider sx={{ my: 1 }} />
+            </Grid>
+            <Grid item>
+              <Typography variant="subtitle2" gutterBottom required>
+                Category <Box component="span" sx={{ color: 'error.main' }}>*</Box>
+              </Typography>
+              <Controller
+                name="category"
+                control={control}
+                rules={{ required: 'Category is required' }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    select
+                    size="small"
+                    fullWidth
+                    error={!!errors.category}
+                    helperText={errors.category?.message}
+                  >
+                    {expenseType === 'Income' && incomeCategories.map((ic) => (
+                      <MenuItem key={ic.category} value={ic.category}>{ic.category}</MenuItem>
+                    ))}
+                    {expenseType === 'Expense' && expenseCategories.map((ec) => (
+                      <MenuItem key={ec.category} value={ec.category}>{ec.category}</MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            </Grid>
+            <Grid item>
+              <Typography variant="subtitle2" gutterBottom required>
+                Description <Box component="span" sx={{ color: 'error.main' }}>*</Box>
+              </Typography>
+              <Controller
+                name="description"
+                control={control}
+                rules={{ required: 'Description is required' }}
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    freeSolo
+                    options={commonDescriptions}
+                    onChange={(_, newInputValue) => field.onChange(newInputValue)}
+                    onInputChange={(_, newInputValue) => field.onChange(newInputValue)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        error={!!errors.description}
+                        helperText={errors.description?.message}
+                        fullWidth
+                      />
+                    )}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item>
+              <Typography variant="subtitle2" gutterBottom>
+                Date
+              </Typography>
+              <Controller
+                name="date"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    size="small"
+                    type="date"
+                    fullWidth
+                    error={!!errors.date}
+                    helperText={errors.date?.message}
+                    slotProps={{
+                      inputLabel: { shrink: true },
+                      htmlInput: { max: new Date().toISOString().split('T')[0] },
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item>
+              <motion.div whileTap={{ scale: 0.95 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="medium"
+                >
+                  Add {expenseType}
+                </Button>
+              </motion.div>
+            </Grid>
           </Grid>
-
-          <Grid item>
-            <ToggleButtonGroup
-              color='primary'
-              value={expense.expenseType}
-              exclusive
-              onChange={(e, value) => value && setExpense({ ...expense, expenseType: value, category: '' })}
-              aria-label="expense type"
-              size="small"
-            >
-              <ToggleButton value="Expense">Expense</ToggleButton>
-              <ToggleButton value="Income">Income</ToggleButton>
-            </ToggleButtonGroup>
-          </Grid>
-
-          <Grid item>
-            <Typography variant="subtitle2" gutterBottom required>
-              Amount <Box component="span" sx={{ color: 'error.main' }}>*</Box>
-            </Typography>
-            <TextField
-              size="small"
-              fullWidth
-              type="number"
-              value={expense.amount}
-              onChange={(e) => handleChange(e.target.value, 'amount')}
-              error={!!errors.amount}
-              helperText={errors.amount}
-              slotProps={{
-                input: {
-                  startAdornment: <Box sx={{ color: 'text.secondary', mr: 1 }}>$</Box>,
-                }
-              }}
-            />
-          </Grid>
-
-          <Grid item>
-            <Divider sx={{ my: 1 }} />
-          </Grid>
-
-          <Grid item>
-            <Typography variant="subtitle2" gutterBottom required>
-              Category <Box component="span" sx={{ color: 'error.main' }}>*</Box>
-            </Typography>
-            <TextField
-              select
-              size="small"
-              fullWidth
-              value={expense.category}
-              onChange={(e) => handleChange(e.target.value, 'category')}
-              error={!!errors.category}
-              helperText={errors.category}
-            >
-              {expense?.expenseType === 'Income' && incomeCategories.map((ic) => (
-                <MenuItem key={ic.category} value={ic.category}>{ic.category}</MenuItem>
-              ))}
-              {expense?.expenseType === 'Expense' && expenseCategories.map((ec) => (
-                <MenuItem key={ec.category} value={ec.category}>{ec.category}</MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item>
-            <Typography variant="subtitle2" gutterBottom required>
-              Description <Box component="span" sx={{ color: 'error.main' }}>*</Box>
-            </Typography>
-            <Autocomplete
-              freeSolo
-              options={commonDescriptions}
-              value={expense.description}
-              onChange={(_, newValue) => handleChange(newValue, 'description')}
-              onInputChange={(_, newValue) => handleChange(newValue, 'description')}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  size="small"
-                  error={!!errors.description}
-                  helperText={errors.description}
-                  fullWidth
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid item>
-            <Typography variant="subtitle2" gutterBottom>
-              Date
-            </Typography>
-            <TextField
-              size="small"
-              type="date"
-              fullWidth
-              value={expense.date}
-              onChange={(e) => handleChange(e.target.value, 'date')}
-              error={!!errors.date}
-              helperText={errors.date}
-              slotProps={{
-                inputLabel: { shrink: true },
-                htmlInput: { max: new Date().toISOString().split('T')[0] },
-              }}
-            />
-          </Grid>
-
-          <Grid item>
-            <motion.div whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="contained"
-                size="medium"
-                onClick={handleSubmit}
-              >
-                Add {expense.expenseType}
-              </Button>
-            </motion.div>
-          </Grid>
-        </Grid>
+        </form>
       </Box>
     </motion.div>
   );
