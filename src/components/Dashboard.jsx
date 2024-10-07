@@ -84,15 +84,22 @@ const Dashboard = () => {
 
   const pieChartData = generatePieChartData(filteredExpenses);
 
-  const lineChartData = {
-    labels: filteredExpenses.filter(exp => exp.expenseType === 'Expense').map(exp => new Date(exp.date).toLocaleDateString()),
-    datasets: [{
-      label: 'Expenses',
-      data: filteredExpenses.filter(exp => exp.expenseType === 'Expense').map(exp => exp.amount),
-      borderColor: theme.palette.primary.main,
-      tension: 0.1,
-    }],
-  };
+  const lineChartData = (() => {
+    // Filter expenses and sort by date
+    const sortedExpenses = filteredExpenses
+      .filter(exp => exp.expenseType === 'Expense')
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    return {
+      labels: sortedExpenses.map(exp => new Date(exp.date).toLocaleDateString()),
+      datasets: [{
+        label: 'Expenses',
+        data: sortedExpenses.map(exp => exp.amount),
+        borderColor: theme.palette.primary.main,
+        tension: 0.1,
+      }],
+    };
+  })();
 
   const barChartData = {
     labels: ['Income', 'Expenses'],
