@@ -20,7 +20,7 @@ const ExpenseForm = () => {
       description: '',
       amount: '',
       category: '',
-      date: '',
+      date: new Date().toISOString().split('T')[0],
     }
   });
 
@@ -81,7 +81,10 @@ const ExpenseForm = () => {
               <Controller
                 name="amount"
                 control={control}
-                rules={{ required: 'Amount is required' }}
+                rules={{
+                  required: 'Amount is required',
+                  validate: (value) => value > 0 || 'Amount must be greater than 0',
+                }}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -90,9 +93,15 @@ const ExpenseForm = () => {
                     type="number"
                     error={!!errors.amount}
                     helperText={errors.amount?.message}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value);
+                      field.onChange(value >= 0 ? value : 0);
+                    }}
                     slotProps={{
                       input: {
                         startAdornment: <Box sx={{ color: 'text.secondary', mr: 1 }}>$</Box>,
+                        min: 0,
+                        step: 0.01,
                       }
                     }}
                   />

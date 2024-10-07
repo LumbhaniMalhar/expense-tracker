@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, Box,
-  useTheme, useMediaQuery, IconButton, AppBar
+  useTheme, useMediaQuery, IconButton, AppBar,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -120,7 +120,7 @@ const ResponsiveDrawer = () => {
           <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 'bold' }}>
             {menuItems.find(item => item.path === location.pathname)?.text || 'Dashboard'}
           </Typography>
-          <Box component="img" src="/hybrid-financial.webp" alt="Company Logo" sx={{ height: 40 }} />
+          <Box component="img" src="/hybrid-financial.webp" alt="Company Logo" sx={{ height: 40, margin: 1, }} />
         </Toolbar>
       </AppBar>
       <Box

@@ -1,6 +1,6 @@
 import Dashboard from '../components/Dashboard';
 import ExpenseForm from '../components/ExpenseForm';
-import ViewExpenses from '../components/ViewExpenses';
+import ViewExpenses from '../components/view-expenses/ViewExpenses';
 
 const mainRoutes = [
   {

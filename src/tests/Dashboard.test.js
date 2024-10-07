@@ -48,7 +48,7 @@ describe('Dashboard Component', () => {
     expect(screen.getByText('Expenses by Category')).toBeInTheDocument();
     expect(screen.getByText('Expense Trend')).toBeInTheDocument();
     expect(screen.getByText('Income vs Expenses')).toBeInTheDocument();
-    expect(screen.getByText('Transactions')).toBeInTheDocument();
+    expect(screen.getByText('Recent Expenses')).toBeInTheDocument();
   });
 
   test('displays correct total amounts', () => {
@@ -58,7 +58,7 @@ describe('Dashboard Component', () => {
     expect(screen.getByText('$550.00')).toBeInTheDocument(); // Expenses
   });
 
-  test('displays recent transactions', () => {
+  test('displays recent Recent Expenses', () => {
     renderDashboard();
     expect(screen.getByText('Groceries')).toBeInTheDocument();
     expect(screen.getByText('Rent')).toBeInTheDocument();

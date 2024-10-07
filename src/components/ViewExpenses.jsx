@@ -1,11 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, IconButton, TextField, MenuItem,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Button, Dialog, DialogActions, DialogContent, DialogTitle,
-  useMediaQuery, useTheme, Chip, Tooltip, InputAdornment, Pagination
+  useMediaQuery, useTheme, Chip, Tooltip, InputAdornment, Pagination, Container
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
@@ -18,6 +19,7 @@ import { expenseCategories, incomeCategories, itemsPerPage, validateForm } from 
 
 const ViewExpenses = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const dispatch = useDispatch();
   const expenses = useSelector((state) => state.expenses.expenses);
@@ -167,10 +169,10 @@ const ViewExpenses = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
           <Typography variant="h6">{expense.description}</Typography>
           <Box>
-            <IconButton size="small" onClick={() => handleEditExpense(expense)}>
+            <IconButton size="small" color='primary' onClick={() => handleEditExpense(expense)}>
               <EditIcon />
             </IconButton>
-            <IconButton size="small" onClick={() => handleDeleteExpense(expense.id)}>
+            <IconButton size="small" color='default' onClick={() => handleDeleteExpense(expense.id)}>
               <DeleteIcon />
             </IconButton>
           </Box>
@@ -179,7 +181,7 @@ const ViewExpenses = () => {
           <Chip
             label={expense.category}
             size="small"
-            sx={{ backgroundColor: [...expenseCategories, ...incomeCategories]?.find(c => c?.category == expense?.category)?.color || 'pink' }}
+            sx={{ backgroundColor: [...expenseCategories, ...incomeCategories]?.find(c => c?.category === expense?.category)?.color || 'pink' }}
           />
           <Typography
             color={expense.expenseType === 'Expense' ? 'error' : 'success'}
@@ -200,6 +202,26 @@ const ViewExpenses = () => {
     setCurrentPage(1);
   }, [filters]);
 
+  const handleAddExpense = () => {
+    navigate('/add-expenses');
+  };
+
+  if (expenses.length === 0) {
+    return (
+      <Container maxWidth="sm" sx={{ textAlign: 'center', mt: 8 }}>
+        <Typography variant="h5" gutterBottom>
+          You have no expense records
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 4 }}>
+          Please start by adding an expense/income to see some analytics.
+        </Typography>
+        <Button variant="contained" color="primary" onClick={handleAddExpense}>
+          Add Expense/Income
+        </Button>
+      </Container>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -212,10 +234,11 @@ const ViewExpenses = () => {
           flexDirection: { xs: 'column', sm: 'row' },
           justifyContent: 'space-between',
           alignItems: { xs: 'flex-start', sm: 'center' },
-          mb: 3
+          mb: 3,
+          gap: 2,
         }}>
           <Typography variant="h5" color='primary' style={{ fontWeight: 'bold' }}>Expenses & Income</Typography>
-          <Box>
+          <Box sx={{ gap: 2 }}>
             <TextField
               size="small"
               placeholder="Search description..."
@@ -279,7 +302,7 @@ const ViewExpenses = () => {
                         <Chip
                           label={expense.category}
                           size="medium"
-                          sx={{ backgroundColor: [...expenseCategories, ...incomeCategories]?.find(c => c?.category == expense?.category)?.color || 'pink' }}
+                          sx={{ backgroundColor: [...expenseCategories, ...incomeCategories]?.find(c => c?.category === expense?.category)?.color || 'pink' }}
                         />
                       </TableCell>
                       <TableCell align="center">{expense.date}</TableCell>
@@ -297,7 +320,7 @@ const ViewExpenses = () => {
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Delete">
-                          <IconButton size="small" color='error' onClick={() => handleDeleteExpense(expense.id)}>
+                          <IconButton size="small" color='default' onClick={() => handleDeleteExpense(expense.id)}>
                             <DeleteIcon />
                           </IconButton>
                         </Tooltip>

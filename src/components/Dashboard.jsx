@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Box, Card, CardContent, Typography, Grid, Select, MenuItem, useTheme, List, ListItem, ListItemText, Link } from '@mui/material';
+import { Box, Card, CardContent, Typography, Select, MenuItem, useTheme, List, ListItem, ListItemText, Link, useMediaQuery } from '@mui/material';
 import { Pie, Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement } from 'chart.js';
 import { AttachMoney, CreditCard, AccountBalance, ArrowForward } from '@mui/icons-material';
+import NoExpenses from './NoExpenses';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
 
@@ -17,6 +18,8 @@ const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalBalance, setTotalBalance] = useState(0);
+
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
   useEffect(() => {
     const calculateTotals = () => {
@@ -58,7 +61,7 @@ const Dashboard = () => {
       .map(exp => exp.category))];
 
     const generateColor = () => {
-      const minBrightness = 0x888888; // Ensures lighter colors
+      const minBrightness = 0x888888;
       const randomColor = Math.floor(Math.random() * (0xFFFFFF - minBrightness) + minBrightness);
       return '#' + randomColor.toString(16);
     };
@@ -109,6 +112,10 @@ const Dashboard = () => {
     navigate('/view-expenses');
   };
 
+  if (!expenses.length) {
+    return <NoExpenses />;
+  };
+
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -124,72 +131,99 @@ const Dashboard = () => {
         </Select>
       </Box>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent sx={{ display: 'flex', alignItems: 'center', backgroundColor: '#19346b', color: 'white' }}>
-              <AccountBalance sx={{ fontSize: 40, mr: 2 }} />
-              <Box>
-                <Typography variant="h6" component="div">Current Balance</Typography>
-                <Typography variant="h5" component="div">
-                  ${Math.abs(totalBalance).toFixed(2)}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-              <AttachMoney sx={{ fontSize: 40, color: theme.palette.success.main, mr: 2 }} />
-              <Box>
-                <Typography variant="h6" component="div">Income</Typography>
-                <Typography variant="h5" component="div">${totalIncome.toFixed(2)}</Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-              <CreditCard sx={{ fontSize: 40, color: theme.palette.error.main, mr: 2 }} />
-              <Box>
-                <Typography variant="h6" component="div">Expenses</Typography>
-                <Typography variant="h5" component="div">${totalExpenses.toFixed(2)}</Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
+        <Card sx={{ flexGrow: 1, minWidth: { xs: '100%', sm: 'calc(33.333% - 16px)', md: 200 } }}>
+          <CardContent sx={{ display: 'flex', alignItems: 'center', backgroundColor: '#19346b', color: 'white' }}>
+            <AccountBalance sx={{ fontSize: 40, mr: 2 }} />
+            <Box>
+              <Typography variant="h6" component="div">Current Balance</Typography>
+              <Typography variant="h5" component="div">
+                ${totalBalance.toFixed(2)}
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card sx={{ flexGrow: 1, minWidth: { xs: '100%', sm: 'calc(33.333% - 16px)', md: 200 } }}>
+          <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
+            <AttachMoney sx={{ fontSize: 40, color: theme.palette.success.main, mr: 2 }} />
+            <Box>
+              <Typography variant="h6" component="div">Income</Typography>
+              <Typography variant="h5" component="div">${totalIncome?.toFixed(2)}</Typography>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card sx={{ flexGrow: 1, minWidth: { xs: '100%', sm: 'calc(33.333% - 16px)', md: 200 } }}>
+          <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
+            <CreditCard sx={{ fontSize: 40, color: theme.palette.error.main, mr: 2 }} />
+            <Box>
+              <Typography variant="h6" component="div">Expenses</Typography>
+              <Typography variant="h5" component="div">${totalExpenses?.toFixed(2)}</Typography>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
 
-      <Grid container spacing={3} sx={{ mt: 2 }}>
-        <Grid item xs={12} md={4}>
-          <Card>
+      {filteredExpenses.length > 0 && (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+          <Card sx={{
+            flexGrow: 1,
+            width: {
+              xs: '100%',
+              md: isLargeScreen ? 'calc(33.333% - 16px)' : 'calc(50% - 8px)',
+              lg: 'calc(33.333% - 16px)'
+            },
+            maxWidth: { xs: '100%', md: isLargeScreen ? 'calc(33.333% - 16px)' : 'calc(50% - 8px)' },
+            minHeight: 400
+          }}>
             <CardContent>
               <Typography variant="h6" component="div" gutterBottom>Expenses by Category</Typography>
-              <Pie data={pieChartData} />
+              <Box sx={{ height: 350 }}>
+                <Pie data={pieChartData} options={{ maintainAspectRatio: false }} />
+              </Box>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ mb: 2 }}>
-            <CardContent>
-              <Typography variant="h6" component="div" gutterBottom>Expense Trend</Typography>
-              <Line data={lineChartData} />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" component="div" gutterBottom>Income vs Expenses</Typography>
-              <Bar data={barChartData} />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 3,
+            flexGrow: 1,
+            width: {
+              xs: '100%',
+              md: isLargeScreen ? 'calc(33.333% - 16px)' : 'calc(50% - 8px)',
+              lg: 'calc(33.333% - 16px)'
+            },
+            maxWidth: { xs: '100%', md: isLargeScreen ? 'calc(33.333% - 16px)' : 'calc(50% - 8px)' }
+          }}>
+            <Card sx={{ minHeight: 200 }}>
+              <CardContent>
+                <Typography variant="h6" component="div" gutterBottom>Expense Trend</Typography>
+                <Box sx={{ height: 150 }}>
+                  <Line data={lineChartData} options={{ maintainAspectRatio: false }} />
+                </Box>
+              </CardContent>
+            </Card>
+            <Card sx={{ minHeight: 200 }}>
+              <CardContent>
+                <Typography variant="h6" component="div" gutterBottom>Income vs Expenses</Typography>
+                <Box sx={{ height: 150 }}>
+                  <Bar data={barChartData} options={{ maintainAspectRatio: false }} />
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+          <Card sx={{
+            flexGrow: 1,
+            width: {
+              xs: '100%',
+              md: isLargeScreen ? 'calc(33.333% - 16px)' : '100%',
+              lg: 'calc(33.333% - 16px)'
+            },
+            maxWidth: { xs: '100%', md: isLargeScreen ? 'calc(33.333% - 16px)' : '100%' },
+            minHeight: 400
+          }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" component="div">Transactions</Typography>
+                <Typography variant="h6" component="div">Recent Expenses</Typography>
                 <Link
                   onClick={handleSeeDetails}
                   style={{
@@ -222,9 +256,8 @@ const Dashboard = () => {
               </List>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
-
+        </Box>
+      )}
     </Box>
   );
 };

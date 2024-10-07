@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ViewExpenses from '../components/ViewExpenses';
+import ViewExpenses from '../components/view-expenses/ViewExpenses';
 
 // Mock the Redux hooks
 jest.mock('react-redux', () => ({
@@ -22,6 +22,13 @@ jest.mock('framer-motion', () => ({
 jest.mock('@mui/material', () => ({
   ...jest.requireActual('@mui/material'),
   useMediaQuery: () => false,
+}));
+
+// Mock the snackbar hook
+jest.mock('../hooks/useSnackBar', () => ({
+  useSnackBar: () => ({
+    showSnackbar: jest.fn(),
+  }),
 }));
 
 describe('ViewExpenses Component', () => {
