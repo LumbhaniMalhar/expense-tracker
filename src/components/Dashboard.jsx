@@ -7,6 +7,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearSca
 import { AttachMoney, CreditCard, AccountBalance, ArrowForward } from '@mui/icons-material';
 import NoExpenses from './NoExpenses';
 
+// Register ChartJS elements
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
 
 const Dashboard = () => {
@@ -21,6 +22,7 @@ const Dashboard = () => {
 
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
+  // Calculate totals based on timeframe
   useEffect(() => {
     const calculateTotals = () => {
       const now = new Date();
@@ -119,6 +121,7 @@ const Dashboard = () => {
     navigate('/view-expenses');
   };
 
+  // If there are no expenses, show a message to add expenses
   if (!expenses.length) {
     return <NoExpenses />;
   };

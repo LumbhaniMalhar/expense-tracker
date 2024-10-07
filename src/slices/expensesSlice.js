@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { loadExpensesFromLocalStorage, saveExpenseToLocalStorage } from '../utils/localStorage';
 
-// Thunk action creators
+// thunk to add an expense
 export const addExpenseAsync = createAsyncThunk(
   'expenses/addExpense',
   async (expense, { dispatch }) => {
@@ -13,6 +13,7 @@ export const addExpenseAsync = createAsyncThunk(
   }
 );
 
+// thunk to edit an expense
 export const editExpenseAsync = createAsyncThunk(
   'expenses/editExpense',
   async ({ id, updatedExpense }, { getState }) => {
@@ -27,6 +28,7 @@ export const editExpenseAsync = createAsyncThunk(
   }
 );
 
+// thunk to delete an expense
 export const deleteExpenseAsync = createAsyncThunk(
   'expenses/deleteExpense',
   async (id, { getState }) => {
@@ -42,12 +44,13 @@ export const deleteExpenseAsync = createAsyncThunk(
 const expensesSlice = createSlice({
   name: 'expenses',
   initialState: {
-    expenses: loadExpensesFromLocalStorage(),
+    expenses: loadExpensesFromLocalStorage(), // Load expenses from local storage
     status: 'idle',
     error: null,
   },
-  reducers: {},
+  reducers: {}, // No need for reducers since we're using createAsyncThunk
   extraReducers: (builder) => {
+    // Add reducers for addExpenseAsync, editExpenseAsync, and deleteExpenseAsync
     builder
       .addCase(addExpenseAsync.pending, (state) => {
         state.status = 'loading';

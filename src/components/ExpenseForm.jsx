@@ -22,8 +22,9 @@ const ExpenseForm = () => {
       category: '',
       date: new Date().toISOString().split('T')[0],
     }
-  });
+  }); // Set default values for the form fields
 
+  // Watch the expenseType field to dynamically change the category options
   const expenseType = watch('expenseType');
 
   const onSubmit = (data) => {

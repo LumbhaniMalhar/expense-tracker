@@ -2,6 +2,7 @@ import Dashboard from '../components/Dashboard';
 import ExpenseForm from '../components/ExpenseForm';
 import ViewExpenses from '../components/view-expenses/ViewExpenses';
 
+// Define the main routes for the application.
 const mainRoutes = [
   {
     path: '/',

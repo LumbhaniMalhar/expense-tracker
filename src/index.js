@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
+// Create a MUI theme instance for the app
 const theme = createTheme({
   palette: {
     primary: {

@@ -35,6 +35,7 @@ const ViewExpenses = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState(null);
   const [errors, setErrors] = useState({});
 
+  // Filter expenses based on search term, category, expense type, and date range.
   const filteredExpenses = useMemo(() => {
     const sortedExpenses = expenses.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
     return sortedExpenses.filter(expense => {
@@ -48,6 +49,7 @@ const ViewExpenses = () => {
     });
   }, [expenses, filters]);
 
+  // Paginate the filtered expenses.
   const paginatedExpenses = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredExpenses.slice(startIndex, startIndex + itemsPerPage);
@@ -56,9 +58,11 @@ const ViewExpenses = () => {
   const pageCount = Math.ceil(filteredExpenses.length / itemsPerPage);
 
   useEffect(() => {
+    // Reset to first page when filters change.
     setCurrentPage(1);
   }, [filters]);
 
+  // If there are no expenses, display a message.
   if (!expenses.length) {
     return <NoExpenses />;
   };

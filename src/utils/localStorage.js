@@ -1,5 +1,6 @@
 export const loadExpensesFromLocalStorage = () => {
   try {
+    // Load expenses from local storage.
     const expenseState = localStorage.getItem('expenses');
     return expenseState ? JSON.parse(expenseState) : [];
   } catch (e) {
@@ -10,6 +11,7 @@ export const loadExpensesFromLocalStorage = () => {
 
 export const saveExpenseToLocalStorage = (expense) => {
   try {
+    // Save expenses to local storage.
     const expenseState = JSON.stringify(expense);
     localStorage.setItem('expenses', expenseState);
   } catch (e) {

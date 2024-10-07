@@ -3,6 +3,7 @@ import { Snackbar, Alert } from '@mui/material';
 
 const SnackbarContext = createContext();
 
+// Custom hook to use the snackbar.
 export const useSnackBar = () => {
   const context = useContext(SnackbarContext);
   if (!context) {
@@ -11,6 +12,7 @@ export const useSnackBar = () => {
   return context;
 };
 
+// Provider component that wraps your app and makes snackbar methods available to any child component that calls the useSnackbar() hook.
 export const SnackbarProvider = ({ children }) => {
   const [snackbar, setSnackbar] = useState({
     open: false,

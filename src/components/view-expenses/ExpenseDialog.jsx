@@ -7,7 +7,6 @@ import { editExpenseAsync } from '../../slices/expensesSlice';
 import { useSnackBar } from '../../hooks/useSnackBar';
 
 const ExpenseDialog = ({ editingExpense, setEditingExpense, errors, setErrors }) => {
-
   const dispatch = useDispatch();
   const { showSnackbar } = useSnackBar();
 
@@ -16,6 +15,7 @@ const ExpenseDialog = ({ editingExpense, setEditingExpense, errors, setErrors })
   };
 
   const handleSave = () => {
+    // Validate the form before saving the expense.
     if (editingExpense && validateForm(editingExpense, setErrors)) {
       dispatch(editExpenseAsync({
         id: editingExpense.id,
@@ -25,7 +25,6 @@ const ExpenseDialog = ({ editingExpense, setEditingExpense, errors, setErrors })
       showSnackbar('Expense updated successfully');
     }
   };
-
   return (
     <Dialog open={!!editingExpense} onClose={handleClose} maxWidth="sm" fullWidth >
       <DialogTitle>Edit Expense</DialogTitle>

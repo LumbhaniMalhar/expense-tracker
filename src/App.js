@@ -12,6 +12,7 @@ function App() {
         <Box sx={{ display: 'flex' }}>
           <ResponsiveDrawer />
           <Box component="main" sx={{ flexGrow: 1, pl: 3, pr: 3, width: { sm: `calc(100% - ${240}px)` } }}>
+            {/* Toolbar here just for spacing, pushes content below app bar */}
             <Toolbar />
             <AppRoutes />
           </Box>
