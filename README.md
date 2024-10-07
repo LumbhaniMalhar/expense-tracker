@@ -2,6 +2,8 @@
 
 A front-end web application for managing personal expenses, built with React for Hybrid Financial Assessment.
 
+![Expense Tracker - HF](./public/dashboard.jpeg)
+
 ## 🛠️ Getting Started
 
 Follow these steps to set up the project and run it locally:
