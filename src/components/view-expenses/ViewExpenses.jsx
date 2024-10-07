@@ -37,13 +37,13 @@ const ViewExpenses = () => {
 
   // Filter expenses based on search term, category, expense type, and date range.
   const filteredExpenses = useMemo(() => {
-    const sortedExpenses = expenses.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+    const sortedExpenses = expenses?.slice().sort((a, b) => new Date(b?.date) - new Date(a?.date));
     return sortedExpenses.filter(expense => {
-      const matchesCategory = filters.category === 'All' || expense.category === filters.category;
-      const matchesSearch = expense.description.toLowerCase().includes(filters.searchTerm.toLowerCase());
-      const matchesType = filters.expenseType === 'All' || expense.expenseType === filters.expenseType;
-      const matchesDateRange = (!filters.startDate || expense.date >= filters.startDate) &&
-        (!filters.endDate || expense.date <= filters.endDate);
+      const matchesCategory = filters?.category === 'All' || expense?.category === filters?.category;
+      const matchesSearch = expense?.description?.toLowerCase().includes(filters?.searchTerm?.toLowerCase());
+      const matchesType = filters?.expenseType === 'All' || expense?.expenseType === filters?.expenseType;
+      const matchesDateRange = (!filters.startDate || expense?.date >= filters?.startDate) &&
+        (!filters.endDate || expense?.date <= filters?.endDate);
 
       return matchesCategory && matchesSearch && matchesType && matchesDateRange;
     });
@@ -55,7 +55,7 @@ const ViewExpenses = () => {
     return filteredExpenses.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredExpenses, currentPage]);
 
-  const pageCount = Math.ceil(filteredExpenses.length / itemsPerPage);
+  const pageCount = Math.ceil(filteredExpenses?.length / itemsPerPage);
 
   useEffect(() => {
     // Reset to first page when filters change.
@@ -63,7 +63,7 @@ const ViewExpenses = () => {
   }, [filters]);
 
   // If there are no expenses, display a message.
-  if (!expenses.length) {
+  if (!expenses?.length) {
     return <NoExpenses />;
   };
 
@@ -86,7 +86,7 @@ const ViewExpenses = () => {
 
         {isMobile ? (
           <AnimatePresence>
-            {paginatedExpenses.map(expense => <MobileExpenseCard key={expense.id} expense={expense} handleEditExpense={setEditingExpense} handleDeleteExpense={setDeleteConfirmation} />)}
+            {paginatedExpenses?.map(expense => <MobileExpenseCard key={expense?.id} expense={expense} handleEditExpense={setEditingExpense} handleDeleteExpense={setDeleteConfirmation} />)}
           </AnimatePresence>
         ) : (
           <TableContainer component={Paper}>
@@ -102,7 +102,7 @@ const ViewExpenses = () => {
               </TableHead>
               <AnimatePresence>
                 <TableBody>
-                  {paginatedExpenses.map(expense => <DesktopExpenseTableRow key={expense.id} expense={expense} handleEditExpense={setEditingExpense} handleDeleteExpense={setDeleteConfirmation} />)}
+                    {paginatedExpenses?.map(expense => <DesktopExpenseTableRow key={expense?.id} expense={expense} handleEditExpense={setEditingExpense} handleDeleteExpense={setDeleteConfirmation} />)}
                 </TableBody>
               </AnimatePresence>
             </Table>

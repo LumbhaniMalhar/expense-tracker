@@ -27,8 +27,8 @@ const Dashboard = () => {
     const calculateTotals = () => {
       const now = new Date();
 
-      const filtered = expenses.filter((expense) => {
-        const expenseDate = new Date(expense.date);
+      const filtered = expenses?.filter((expense) => {
+        const expenseDate = new Date(expense?.date);
         switch (timeframe) {
           case 'today':
             const oneDayAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
@@ -44,9 +44,9 @@ const Dashboard = () => {
         }
       });
 
-      const income = filtered.reduce((sum, exp) => exp.expenseType === 'Income' ? sum + exp.amount : sum, 0);
-      const expensesTotal = filtered.reduce((sum, exp) => exp.expenseType === 'Expense' ? sum + exp.amount : sum, 0);
-      const balance = expenses.reduce((sum, exp) => exp.expenseType === 'Income' ? sum + exp.amount : sum, 0) - expenses.reduce((sum, exp) => exp.expenseType === 'Expense' ? sum + exp.amount : sum, 0);
+      const income = filtered?.reduce((sum, exp) => exp?.expenseType === 'Income' ? sum + exp?.amount : sum, 0);
+      const expensesTotal = filtered.reduce((sum, exp) => exp?.expenseType === 'Expense' ? sum + exp?.amount : sum, 0);
+      const balance = expenses?.reduce((sum, exp) => exp?.expenseType === 'Income' ? sum + exp?.amount : sum, 0) - expenses?.reduce((sum, exp) => exp?.expenseType === 'Expense' ? sum + exp?.amount : sum, 0);
 
       setFilteredExpenses(filtered);
       setTotalIncome(income);
@@ -59,19 +59,19 @@ const Dashboard = () => {
 
   const generatePieChartData = () => {
     const categories = [...new Set(filteredExpenses
-      .filter(exp => exp.expenseType === 'Expense')
-      .map(exp => exp.category))];
+      ?.filter(exp => exp?.expenseType === 'Expense')
+      .map(exp => exp?.category))];
 
     const generateColor = () => {
       const minBrightness = 0x888888;
       const randomColor = Math.floor(Math.random() * (0xFFFFFF - minBrightness) + minBrightness);
       return '#' + randomColor.toString(16);
     };
-    const colors = categories.map(() => generateColor());
+    const colors = categories?.map(() => generateColor());
 
-    const data = categories.map(category =>
+    const data = categories?.map(category =>
       filteredExpenses
-        .filter(exp => exp.category === category && exp.expenseType === 'Expense')
+        ?.filter(exp => exp?.category === category && exp?.expenseType === 'Expense')
         .reduce((sum, exp) => sum + exp.amount, 0)
     );
 
@@ -89,14 +89,14 @@ const Dashboard = () => {
   const lineChartData = (() => {
     // Filter expenses and sort by date
     const sortedExpenses = filteredExpenses
-      .filter(exp => exp.expenseType === 'Expense')
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
+      ?.filter(exp => exp?.expenseType === 'Expense')
+      .sort((a, b) => new Date(a?.date) - new Date(b?.date));
 
     return {
-      labels: sortedExpenses.map(exp => new Date(exp.date).toLocaleDateString()),
+      labels: sortedExpenses?.map(exp => new Date(exp?.date).toLocaleDateString()),
       datasets: [{
         label: 'Expenses',
-        data: sortedExpenses.map(exp => exp.amount),
+        data: sortedExpenses.map(exp => exp?.amount),
         borderColor: theme.palette.primary.main,
         tension: 0.1,
       }],
@@ -113,8 +113,8 @@ const Dashboard = () => {
   };
 
   const recentExpenses = expenses
-    .filter(exp => exp.expenseType === 'Expense')
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .filter(exp => exp?.expenseType === 'Expense')
+    .sort((a, b) => new Date(b?.date) - new Date(a?.date))
     .slice(0, 5);
 
   const handleSeeDetails = () => {
@@ -122,7 +122,7 @@ const Dashboard = () => {
   };
 
   // If there are no expenses, show a message to add expenses
-  if (!expenses.length) {
+  if (!expenses?.length) {
     return <NoExpenses />;
   };
 
@@ -148,7 +148,7 @@ const Dashboard = () => {
             <Box>
               <Typography variant="h6" component="div">Current Balance</Typography>
               <Typography variant="h5" component="div">
-                ${totalBalance.toFixed(2)}
+                ${totalBalance?.toFixed(2)}
               </Typography>
             </Box>
           </CardContent>
@@ -259,7 +259,7 @@ const Dashboard = () => {
                       secondary={new Date(expense.date).toLocaleDateString()}
                     />
                     <Typography variant="body2" color="error">
-                      -${expense.amount.toFixed(2)}
+                      -${expense?.amount?.toFixed(2)}
                     </Typography>
                   </ListItem>
                 ))}
